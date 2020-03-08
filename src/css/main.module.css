@@ -1,0 +1,68 @@
+.horLayout {
+	display:table;
+	margin: 8px;
+}
+
+.verticalLayout {
+	position: relative;
+	margin: 8px;
+}
+
+.movesList{
+	margin: 16px;
+}
+
+.game {
+  	display: flex;
+  	flex-direction: row;
+}
+
+.gameInfo {
+	position: relative;
+	margin: 4px;
+}
+
+.horLayoutItem {
+	float: left;
+}
+
+.col {
+    width: 50%;
+    float: left;
+}
+
+.board-row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.square {
+ 	background: #fff;
+ 	border: 1px solid #999;
+    float: left;
+	font-weight: bold;
+	font-size: 24px;
+	padding: 0;
+	width: 34px;
+	height: 34px;
+	line-height: 34px;
+	z-index: 1;
+}
+
+.squareOuter {
+	position: relative;
+	float: left;
+}
+
+
+
+.squareSideText {
+	position: absolute;
+	font-size: 8px;
+	z-index: 2;
+	right:5%;
+}
+
+.board-row {
+}
