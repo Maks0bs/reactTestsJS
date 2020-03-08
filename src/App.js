@@ -45,19 +45,23 @@ class GameBoardCell extends Component {
     //console.log('created');
 
 
-    this.state = {
+    /*this.state = {
       value: this.props.value
-    }
+    }*/
 
+  }
+
+  componentDidUpdate(nextProps){
+    console.log('updated');
   }
 
 
   handleClick(){
     //console.log('clicked ' + this.props.num + ' ' + this.props.value);
     let curPlayer = this.props.onChecked(this.props.num);
-    this.setState({
+    /*this.setState({
       value: curPlayer
-    });
+    });*/
   }
 
   blockClick(){
@@ -65,17 +69,17 @@ class GameBoardCell extends Component {
   }
 
   render(){
-    console.log('value: ' + this.state.value);
+    console.log('value: ' + this.props.value);
     let square = cssClasses.square;
     let squareSideText = cssClasses.squareSideText;
     let squareOuter = cssClasses.squareOuter;
     let value, handler;
-    if (this.state.value === -1){
+    if (this.props.value === -1){
       value = " ";
       handler = this.handleClick;
     }
     else{
-      value = PLAYERS[this.state.value];
+      value = PLAYERS[this.props.value];
       handler = this.blockClick;
     }
     return (
@@ -126,16 +130,15 @@ class GameBoard extends Component {
   }
 
   updateBoard(num){
-    //console.log('boardstatenum: ' + this.props.boardState[num]);
-    let value = this.props.boardState[num];
+    console.log('boardstatenum: ' + this.props.boardState[num]);
     let row = Math.floor((num + GAMEBOARD_SIZE) / GAMEBOARD_SIZE - 1);
     let col = num % GAMEBOARD_SIZE;
     let newElement = (
       <GameBoardCell 
         num={num}
         key={num}
-        value={value}
-        boardState={this.props.boardState}
+        value={this.props.boardState[num]}
+        //boardState={this.props.boardState}
         onChecked={this.handeTurn}
       />
     );
@@ -143,13 +146,13 @@ class GameBoard extends Component {
     
 
 
-    ((this.#board)[row].props.children).splice(col, 1, newElement);
+    ((this.#board)[row].props.children)[col] = newElement;
   }
 
   handeTurn(num){
     this.props.onMakeTurn(num);
-    return this.props.boardState[num];
     this.updateBoard(num);
+    return this.props.boardState[num];   
   }
 
 
@@ -182,10 +185,9 @@ class Game extends Component {
   }
 
   makeTurn(num){
-    //this.changePlayer();
     this.state.turnHistory.push(this.state.boardState);
     this.state.boardState[num] = this.state.curPlayer;
-    //console.log(this.state.boardState);
+    //console.log(this.state.turnHistory);
 
     this.setState({
       turnHistory: this.state.turnHistory,
@@ -196,16 +198,18 @@ class Game extends Component {
   }
 
   render(){
+    console.log('render new');
     let game = cssClasses.game;
     let gameInfo = cssClasses.gameInfo;
     let movesList = cssClasses.movesList;
-    let curPlayer = this.state.curPlayer;
-    let boardState = this.state.boardState;
     return (
       <div className={game}>
-        <GameBoard onMakeTurn={this.makeTurn} boardState={boardState}/>
+        <GameBoard 
+          onMakeTurn={this.makeTurn} 
+          boardState={this.state.boardState}
+        />
         <div className={gameInfo}>
-          <PlayerDisplay player={curPlayer}/>
+          <PlayerDisplay player={this.state.curPlayer}/>
           <MovesList className={movesList}/>
         </div>
       </div>
