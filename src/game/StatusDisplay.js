@@ -4,7 +4,6 @@ let {PLAYERS, GAME_RESULT_UNDECIDED, GAME_RESULT_DRAW} = require('./constants');
 class StatusDisplay extends Component {
   render(){
     let text;
-    
     if (this.props.gameResult === GAME_RESULT_DRAW){
       text = `No winner, draw!`;
     }

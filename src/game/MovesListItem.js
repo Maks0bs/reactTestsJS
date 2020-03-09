@@ -12,7 +12,6 @@ class MovesListItem extends Component {
   }
 
   render(){
-    console.log('rendered MovesListItem');
     return (
       <li>
         <button onClick={this.handleClick}>

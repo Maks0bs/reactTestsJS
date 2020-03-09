@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import cssClasses from '../css/main.module.css'
-let {PLAYERS, NULL_PLAYER_PLACEHOLDER, NULL_TURN, NULL_TURN_PLACEHOLDER} = require('./constants');
+let {PLAYERS, NULL_TURN, NULL_TURN_PLACEHOLDER} = require('./constants');
 
 class GameBoardCell extends Component {
   constructor(props){
@@ -10,7 +10,7 @@ class GameBoardCell extends Component {
   }
 
   handleClick(){
-    this.props.makeTurn(this.props.num);
+    this.props.makeTurn(this.props.row, this.props.col);
   }
 
   blockClick(){
@@ -21,7 +21,7 @@ class GameBoardCell extends Component {
     let value, handler, curTurn;
     if (this.props.curTurn === NULL_TURN){
       curTurn = NULL_TURN_PLACEHOLDER;
-      value = NULL_PLAYER_PLACEHOLDER;
+      value = NULL_TURN_PLACEHOLDER;
       handler = this.handleClick;
     }
     else{

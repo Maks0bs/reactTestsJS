@@ -1,7 +1,5 @@
 exports.GAMEBOARD_SIZE = 3;
 exports.PLAYERS = ['X', 'O'];
-exports.NULL_PLAYER = -20;
-exports.NULL_PLAYER_PLACEHOLDER = " ";
 exports.NULL_TURN = -10;
 exports.NULL_TURN_PLACEHOLDER = " ";
 exports.GAME_RESULT_UNDECIDED = -30;
