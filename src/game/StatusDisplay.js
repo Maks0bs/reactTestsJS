@@ -1,16 +1,22 @@
 import React, {Component} from 'react';
-let {PLAYERS} = require('./constants');
+let {PLAYERS, GAME_RESULT_UNDECIDED, GAME_RESULT_DRAW} = require('./constants');
 
 class StatusDisplay extends Component {
-  constructor(props){
-    super(props);
-  }
-
   render(){
-    //console.log(PLAYERS[this.props.player]);
+    let text;
+    
+    if (this.props.gameResult === GAME_RESULT_DRAW){
+      text = `No winner, draw!`;
+    }
+    else if (this.props.gameResult >= 0 && this.props.gameResult < PLAYERS.length){
+      text = `Winner: ${PLAYERS[this.props.gameResult]}`
+    }
+    else if (!this.props.gameResult || this.props.gameResult === GAME_RESULT_UNDECIDED){
+      text = `Next player: ${PLAYERS[this.props.player]}`;
+    }
     return (
       <div>
-        <div>Next player: {PLAYERS[this.props.player]}</div>
+        <div>{text}</div>
       </div>
     )
   }

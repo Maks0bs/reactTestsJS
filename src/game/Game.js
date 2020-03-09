@@ -3,9 +3,14 @@ import cssClasses from '../css/main.module.css'
 import GameBoard from './GameBoard';
 import StatusDisplay from './StatusDisplay'
 import MovesList from './MovesList'
-import {GAMEBOARD_SIZE, NULL_PLAYER, NULL_TURN, GAME_RESULT_UNDECIDED,
+import {GAMEBOARD_SIZE, NULL_PLAYER, GAME_RESULT_UNDECIDED,
   GAME_RESULT_DRAW, GAME_WIN_SYMBOLS_CNT
 } from './constants'
+
+/* TODO TODO TODO TODO TODO
+  1) Add return to certain turn (just like in the example)
+  2) change turnHistory to persistent normal structure (will not save whole state, but only changes)
+*/
 
 class Game extends Component {
   static OUT_OF_BOUNDS = -15;
@@ -24,6 +29,7 @@ class Game extends Component {
     this.makeTurn = this.makeTurn.bind(this);
     this.getGameResult = this.getGameResult.bind(this);
     this.getPos = this.getPos.bind(this);
+    this.goToTurn = this.goToTurn.bind(this);
   }
 
   getPos(i, j){
@@ -33,41 +39,78 @@ class Game extends Component {
     return i * GAMEBOARD_SIZE + j;
   }
 
-  getGameResult(){
+  getGameResult(board){
     let result = GAME_RESULT_UNDECIDED;
-    let board = this.state.turnHistory[this.state.curTurn];
-
+    //let board = this.state.turnHistory[this.state.curTurn];
     for (let i = 0; i < GAMEBOARD_SIZE; i++){
+      if (result !== GAME_RESULT_UNDECIDED){
+        break;
+      }
       for (let j = 0; j < GAMEBOARD_SIZE; j++){
         let comp = board[this.getPos(i, j)];
+        if (comp === NULL_PLAYER){
+          continue;
+        }
         let r = true, d = true, dr = true, ur = true; 
-        for (let k = 0; k < GAME_WIN_SYMBOLS_CNT; k++){
-          //if ()
+        for (let k = 1; k < GAME_WIN_SYMBOLS_CNT; k++){
+          //may be able to optimise if merge some conditions in one
+          if (r && (this.getPos(i, j + k) === Game.OUT_OF_BOUNDS || 
+            board[this.getPos(i, j + k)] !== comp)
+          ){
+            r = false;
+          }
+
+          if (dr && (this.getPos(i + k, j + k) === Game.OUT_OF_BOUNDS || 
+            board[this.getPos(i + k, j + k)] !== comp)
+          ){
+            dr = false;
+          }
+
+          if (d && (this.getPos(i + k, j) === Game.OUT_OF_BOUNDS || 
+            board[this.getPos(i + k, j)] !== comp)
+          ){
+            d = false;
+          }
+
+          if (ur && (this.getPos(i - k, j + k) === Game.OUT_OF_BOUNDS || 
+            board[this.getPos(i - k, j + k)] !== comp)
+          ){
+            ur = false;
+          }
+        }
+
+        if (r || d || dr || ur){
+          result = comp;
+          break;
         }
       }
     }
     if (result === GAME_RESULT_UNDECIDED && 
-      this.state.turnHistory.length === GAMEBOARD_SIZE * GAMEBOARD_SIZE
+      this.state.turnHistory.length - 1 === GAMEBOARD_SIZE * GAMEBOARD_SIZE
     ){
       result = GAME_RESULT_DRAW;
     }
-
     return result;
   }
 
   makeTurn(num){
     //this way of updating state is optimal for arrays (imho), but renderer gives a warning
     //that you shouldn't mutate state directly
-    this.state.turnHistory.push([...this.state.turnHistory[this.state.curTurn]]);
-    this.state.turnHistory[this.state.curTurn + 1][num] = this.state.curTurn % 2;
-    let gameResult = this.getGameResult();
+    let last = [...this.state.turnHistory[this.state.curTurn]];
+    last[num] = this.state.curTurn % 2;
     this.setState({
-      turnHistory: this.state.turnHistory,
-      curTurn: this.state.curTurn + 1
+      turnHistory: [...this.state.turnHistory, last],
+      gameResult: this.getGameResult(last),
+      curTurn: this.state.curTurn + 1,
     })
   }
 
-  check
+  goToTurn(num){
+    this.setState({
+      turnHistory: this.state.turnHistory.slice(0, num + 1),
+      curTurn: num
+    })
+  }
 
   render(){
     console.log(this.state.turnHistory);
@@ -77,10 +120,18 @@ class Game extends Component {
           makeTurn={this.makeTurn} 
           boardState={this.state.turnHistory[this.state.curTurn]}
           curTurn={this.state.curTurn}
+          gameResult={this.state.gameResult}
         />
         <div className={cssClasses.gameInfo}>
-          <StatusDisplay player={this.state.curTurn % 2} winner="1"/>
-          <MovesList className={cssClasses.movesList}/>
+          <StatusDisplay 
+            player={this.state.curTurn % 2}
+            gameResult={this.state.gameResult}
+          />
+          <MovesList 
+            className={cssClasses.movesList}
+            curTurn={this.state.curTurn}
+            goToTurn={this.goToTurn}
+          />
         </div>
       </div>
     );

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import cssClasses from '../css/main.module.css'
-let {PLAYERS, NULL_PLAYER, NULL_PLAYER_PLACEHOLDER, NULL_TURN, NULL_TURN_PLACEHOLDER} = require('./constants');
+let {PLAYERS, NULL_PLAYER_PLACEHOLDER, NULL_TURN, NULL_TURN_PLACEHOLDER} = require('./constants');
 
 class GameBoardCell extends Component {
   constructor(props){
@@ -18,22 +18,16 @@ class GameBoardCell extends Component {
   }
 
   render(){
-    let value, handler;
-    if (this.props.value === NULL_PLAYER){
+    let value, handler, curTurn;
+    if (this.props.curTurn === NULL_TURN){
+      curTurn = NULL_TURN_PLACEHOLDER;
       value = NULL_PLAYER_PLACEHOLDER;
       handler = this.handleClick;
     }
     else{
-      value = PLAYERS[this.props.value];
-      handler = this.blockClick;
-    }
-
-    let curTurn;
-    if (this.props.curTurn === NULL_TURN){
-      curTurn = NULL_TURN_PLACEHOLDER;
-    }
-    else{
       curTurn = (this.props.curTurn + 1).toString();
+      value = PLAYERS[this.props.curTurn % 2]
+      handler = this.blockClick;
     }
     return (
       <div className={cssClasses.squareOuter}>
